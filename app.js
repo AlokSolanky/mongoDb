@@ -21,6 +21,7 @@ app.use(cors());
 
 app.use((req, res, next) => {
   User.findById("6518eb43a9070d3529817516").then((user) => {
+    console.log("USER IS :", user);
     req.user = new User(user.name, user.email, user.cart, user._id);
     next();
   });
