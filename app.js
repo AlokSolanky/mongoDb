@@ -9,7 +9,7 @@ const errorController = require("./controllers/error");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
-// const User = require("./models/user");
+const User = require("./models/user");
 
 const app = express();
 
@@ -20,13 +20,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 
-// app.use((req, res, next) => {
-//   User.findById("6518eb43a9070d3529817516").then((user) => {
-//     console.log("USER IS :", user);
-//     req.user = new User(user.name, user.email, user.cart, user._id);
-//     next();
-//   });
-// });
+app.use((req, res, next) => {
+  User.findById("651e8b62b4350cc99d821c22").then((user) => {
+    req.user = user;
+    next();
+  });
+});
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(errorController.get404);
@@ -37,6 +36,19 @@ mongoose
   )
   .then((result) => {
     console.log("connected");
+    User.findOne().then((user) => {
+      if (!user) {
+        const user = new User({
+          name: "Penn",
+          email: "pennBad@yahoo.com",
+          cart: {
+            items: [],
+          },
+        });
+        user.save();
+      }
+    });
+
     app.listen(3000);
   })
   .catch((err) => {
