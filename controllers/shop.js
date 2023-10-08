@@ -51,17 +51,20 @@ exports.getIndex = (req, res, next) => {
     });
 };
 
-exports.getCart = (req, res, next) => {
-  req.user
-    .getCart()
-    .then((products) => {
-      res.render("shop/cart", {
-        path: "/cart",
-        pageTitle: "Your Cart",
-        products: products,
-      });
-    })
-    .catch((err) => console.log(err));
+exports.getCart = async (req, res, next) => {
+  // console.log("USER ", req.user);
+  try {
+    let user = await req.user.populate("cart.items.productId");
+
+    const products = user.cart.items;
+    res.render("shop/cart", {
+      path: "/cart",
+      pageTitle: "Your Cart",
+      products: products,
+    });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 exports.postCart = (req, res, next) => {
